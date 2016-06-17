@@ -1,0 +1,6 @@
+{
+  "files": [
+    "js/sounds.ts",
+    "js/utils/_getNoteFromDecimal.ts"
+	]
+}
