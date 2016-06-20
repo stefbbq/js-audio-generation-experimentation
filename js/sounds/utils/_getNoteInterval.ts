@@ -1,3 +1,5 @@
+// declare modes
+
 let modes = {
 	"ionian": [2, 2, 1, 2, 2, 2, 1],
 	"dorian": [2, 1, 2, 2, 2, 1, 2],
@@ -8,17 +10,20 @@ let modes = {
 	"locrian": [1, 2, 2, 1, 2, 2, 2]
 }
 
-function getNoteInMode($mode, $note){
-	var value = Math.floor($note * 7)
+// utility
+
+function getNoteInterval($mode, $note){
+	var value = $note % 7
 	
 	for(var key in modes){
 		if(key == $mode){
-			let total = -1
+			let total = 0
 			
-			for(var i = 0; i <= value; i++){
+			for(var i = 0; i < value; i++){
 				total += modes[key][i]
 			}
 			
+      console.log('total: ' + total)
 			return total
 		}
 	}

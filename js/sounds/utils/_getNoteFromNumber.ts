@@ -1,5 +1,9 @@
-function getNoteFromNumber($note){
+function getNoteFromNumber($key, $note){
 	let note:string
+  console.log('getKeyOffset value: ' + getKeyOffset($key) + ', note piped in: ' + $note)
+  $note = ($note + getKeyOffset($key)) % 12
+
+  console.log('final note number: ' + $note)
 	
 	switch($note){
 		case 0:
@@ -41,7 +45,8 @@ function getNoteFromNumber($note){
 		default:
 			break;
 	}
+  
+  console.log('playing note: ' + note)
 	
-	console.log('playing note: ' + note)
 	return note
 }
