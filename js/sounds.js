@@ -183,6 +183,20 @@ function getNoteDuration($tempo, $noteLength) {
     }
     return length;
 }
+function getRandomLength() {
+    var randomLength = Math.random();
+    var duration;
+    if (randomLength < .25) {
+        duration = getNoteDuration(tempo, 'half');
+    }
+    else if (function (randomLength) { return .25 && randomLength < .5; }) {
+        duration = getNoteDuration(tempo, 'quarter');
+    }
+    else if (function (randomLength) { return .5 && randomLength <= 1; }) {
+        duration = getNoteDuration(tempo, 'eigth');
+    }
+    return duration;
+}
 //
 // buffer class
 // stores note information; pitch and duration
@@ -199,29 +213,45 @@ var Buffer = (function () {
         return [this.pitch[$index], this.duration[$index]];
     };
     return Buffer;
-})();
+}());
 /// <reference path='utils/_getNoteFromDecimal.ts' />
 /// <reference path='utils/_getKeyOffset.ts' />
 /// <reference path='utils/_getNoteFromNumber.ts' />
 /// <reference path='utils/_getNoteInterval.ts' />
 /// <reference path='utils/_getNoteDuration.ts' />
+/// <reference path='utils/_getRandomLength.ts' />
 /// <reference path='modules/_buffer.ts' />
 var piano = Synth.createInstrument('piano');
-var notes = 12;
-var repeat = true;
-var buffer = new Buffer();
-var note = 0;
-var tempo = 120;
-var currentNote = 0;
+// properties
+var notes = 8;
+var tempo = 180;
 var key = 'C';
-startPlaying();
-function startPlaying() {
+var verses = 3;
+var repeats = 4;
+var turnaround = 0;
+// utils
+var buffer, currentNote;
+playSong();
+function playSong() {
+    currentNote = 0;
+    if (turnaround < (verses * repeats)) {
+        if (turnaround % repeats == 0) {
+            buffer = new Buffer();
+            playTurnaround(false);
+        }
+        else {
+            playTurnaround(true);
+        }
+    }
+    turnaround++;
+}
+function playTurnaround($isRepeat) {
     var note;
     var duration;
-    if (currentNote < notes) {
+    if (!$isRepeat) {
         var randomNote = Math.random() * 7;
         note = getNoteInterval('ionian', randomNote);
-        duration = pickRandomLength();
+        duration = getRandomLength();
         console.log('duration: ' + duration);
         buffer.appendNote(randomNote, duration);
     }
@@ -233,22 +263,12 @@ function startPlaying() {
     // if(!duration) let newDuration = Math.random()
     piano.play(getNoteFromNumber(key, note), 2, duration / 1000);
     setTimeout(function () {
-        if (notes > currentNote || repeat)
-            startPlaying();
+        if (notes > currentNote) {
+            playTurnaround($isRepeat);
+        }
+        else {
+            playSong();
+        }
     }, duration);
     currentNote++;
-}
-function pickRandomLength() {
-    var randomLength = Math.random();
-    var duration;
-    if (randomLength < .25) {
-        duration = getNoteDuration(tempo, 'half');
-    }
-    else if (function (randomLength) { return .25 && randomLength < .5; }) {
-        duration = getNoteDuration(tempo, 'quarter');
-    }
-    else if (function (randomLength) { return .5 && randomLength <= 1; }) {
-        duration = getNoteDuration(tempo, 'eigth');
-    }
-    return duration;
 }
