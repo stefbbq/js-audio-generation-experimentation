@@ -3,23 +3,25 @@
 /// <reference path='utils/_getNoteFromNumber.ts' />
 /// <reference path='utils/_getNoteInterval.ts' />
 /// <reference path='utils/_getNoteDuration.ts' />
-/// <reference path='utils/_getRandomLength.ts' />
+/// <reference path='utils/generateDuration.ts' />
 /// <reference path='modules/_buffer.ts' />
 
 declare var Synth:any
 
-var piano = Synth.createInstrument('piano');
+var piano = Synth.createInstrument('piano')
 
 // properties
 let notes = 8
-let tempo = 180
+let tempo = 120
 let key = 'C'
 let verses = 3
 let repeats = 4
 let turnaround = 0
+let durations:String[] = ['quarter']
 
 // utils
 let buffer, currentNote
+let generateDuration = new GenerateDuration()
 
 playSong()
 
@@ -44,7 +46,7 @@ function playTurnaround($isRepeat){
     let randomNote = Math.random() * 7
     
   	note = getNoteInterval('ionian', randomNote)
-    duration = getRandomLength()
+    duration = (60 / tempo) * (1 / generateDuration.getRandomDuration(durations)) * 1000
     console.log('duration: ' + duration)
     
     buffer.appendNote(randomNote, duration)

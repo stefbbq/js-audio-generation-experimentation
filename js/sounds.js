@@ -183,20 +183,45 @@ function getNoteDuration($tempo, $noteLength) {
     }
     return length;
 }
-function getRandomLength() {
-    var randomLength = Math.random();
-    var duration;
-    if (randomLength < .25) {
-        duration = getNoteDuration(tempo, 'half');
+//
+// GenerateDuration class
+// returns a random note duration
+var GenerateDuration = (function () {
+    function GenerateDuration() {
     }
-    else if (function (randomLength) { return .25 && randomLength < .5; }) {
-        duration = getNoteDuration(tempo, 'quarter');
-    }
-    else if (function (randomLength) { return .5 && randomLength <= 1; }) {
-        duration = getNoteDuration(tempo, 'eigth');
-    }
-    return duration;
-}
+    GenerateDuration.prototype.convertDurationToNumber = function ($duration, $isTriplet) {
+        if ($isTriplet === void 0) { $isTriplet = false; }
+        var durationNumber;
+        switch ($duration) {
+            case 'whole':
+                durationNumber = .25;
+                break;
+            case 'half':
+                durationNumber = .5;
+                break;
+            case 'quarter':
+                durationNumber = 1;
+                break;
+            case 'eighth':
+                durationNumber = 2;
+                break;
+            case 'sixteenth':
+                durationNumber = 4;
+                break;
+            case 'thritysecond':
+                durationNumber = 8;
+                break;
+        }
+        if ($isTriplet)
+            durationNumber = durationNumber * 1.5;
+        return durationNumber;
+    };
+    // getter
+    GenerateDuration.prototype.getRandomDuration = function ($options) {
+        return this.convertDurationToNumber($options[Math.floor(Math.random() * $options.length)]);
+    };
+    return GenerateDuration;
+}());
 //
 // buffer class
 // stores note information; pitch and duration
@@ -219,18 +244,20 @@ var Buffer = (function () {
 /// <reference path='utils/_getNoteFromNumber.ts' />
 /// <reference path='utils/_getNoteInterval.ts' />
 /// <reference path='utils/_getNoteDuration.ts' />
-/// <reference path='utils/_getRandomLength.ts' />
+/// <reference path='utils/generateDuration.ts' />
 /// <reference path='modules/_buffer.ts' />
 var piano = Synth.createInstrument('piano');
 // properties
 var notes = 8;
-var tempo = 180;
+var tempo = 120;
 var key = 'C';
 var verses = 3;
 var repeats = 4;
 var turnaround = 0;
+var durations = ['quarter'];
 // utils
 var buffer, currentNote;
+var generateDuration = new GenerateDuration();
 playSong();
 function playSong() {
     currentNote = 0;
@@ -251,7 +278,7 @@ function playTurnaround($isRepeat) {
     if (!$isRepeat) {
         var randomNote = Math.random() * 7;
         note = getNoteInterval('ionian', randomNote);
-        duration = getRandomLength();
+        duration = (60 / tempo) * (1 / generateDuration.getRandomDuration(durations)) * 1000;
         console.log('duration: ' + duration);
         buffer.appendNote(randomNote, duration);
     }

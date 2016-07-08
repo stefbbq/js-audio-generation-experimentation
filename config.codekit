@@ -184,19 +184,19 @@
 		"suppressImplicitAnyIndexErrors": 0,
 		"targetECMAVersion": 0
 		},
-	"\/js\/sounds\/utils\/_getRandomLength.ts": {
+	"\/js\/sounds\/utils\/generateDuration.ts": {
 		"createDeclarationFile": 0,
 		"createSourceMap": 0,
 		"fileType": 128,
 		"ignore": 1,
 		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/js\/sounds\/utils\/_getRandomLength.ts",
+		"inputAbbreviatedPath": "\/js\/sounds\/utils\/generateDuration.ts",
 		"jsxMode": 0,
 		"minifyOutput": 0,
 		"moduleResolutionType": 0,
 		"moduleType": 2,
 		"noImplicitAny": 0,
-		"outputAbbreviatedPath": "\/js\/sounds\/utils\/js\/_getRandomLength.js",
+		"outputAbbreviatedPath": "\/js\/sounds\/utils\/js\/generateDuration.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"preserveConstEnums": 0,
