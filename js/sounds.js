@@ -135,30 +135,33 @@ function getNoteFromNumber($key, $note) {
     console.log('playing note: ' + note);
     return note;
 }
-// declare modes
-var modes = {
-    "ionian": [2, 2, 1, 2, 2, 2, 1],
-    "dorian": [2, 1, 2, 2, 2, 1, 2],
-    "phrygian": [1, 2, 2, 2, 1, 2, 2],
-    "lydian": [2, 2, 2, 1, 2, 2, 1],
-    "mixolydian": [2, 2, 1, 2, 2, 1, 2],
-    "aeolian": [2, 1, 2, 2, 1, 2, 2],
-    "locrian": [1, 2, 2, 1, 2, 2, 2]
-};
-// utility
-function getNoteInterval($mode, $note) {
-    var value = $note % 7;
-    for (var key in modes) {
-        if (key == $mode) {
-            var total = 0;
-            for (var i = 0; i < value; i++) {
-                total += modes[key][i];
+var Modes;
+(function (Modes) {
+    var modes = {};
+    getData();
+    function getData() {
+        $.get('js/sounds/data/data.json', success);
+    }
+    Modes.getData = getData;
+    function success($data) {
+        modes = $data;
+        dispatchEvent(new Event('modeDataLoaded'));
+    }
+    Modes.success = success;
+    function getNoteInterval($mode, $note) {
+        var value = $note % 7;
+        for (var key in modes) {
+            if (key == $mode) {
+                var total = 0;
+                for (var i = 0; i < value; i++) {
+                    total += modes[key][i];
+                }
+                return total;
             }
-            console.log('total: ' + total);
-            return total;
         }
     }
-}
+    Modes.getNoteInterval = getNoteInterval;
+})(Modes || (Modes = {}));
 function getNoteDuration($tempo, $noteLength) {
     var length;
     switch ($noteLength) {
@@ -241,12 +244,13 @@ var Buffer = (function () {
 }());
 /// <reference path='utils/_getNoteFromDecimal.ts' />
 /// <reference path='utils/_getKeyOffset.ts' />
-/// <reference path='utils/_getNoteFromNumber.ts' />
-/// <reference path='utils/_getNoteInterval.ts' />
+/// <reference path='utils/GetNoteFromNumber.ts' />
+/// <reference path='utils/Modes.ts' />
 /// <reference path='utils/_getNoteDuration.ts' />
 /// <reference path='utils/generateDuration.ts' />
-/// <reference path='modules/_buffer.ts' />
+/// <reference path='modules/Buffer.ts' />
 var piano = Synth.createInstrument('piano');
+this.addEventListener('modeDataLoaded', init);
 // properties
 var notes = 8;
 var tempo = 120;
@@ -258,7 +262,9 @@ var durations = ['quarter'];
 // utils
 var buffer, currentNote;
 var generateDuration = new GenerateDuration();
-playSong();
+function init() {
+    playSong();
+}
 function playSong() {
     currentNote = 0;
     if (turnaround < (verses * repeats)) {
@@ -277,13 +283,13 @@ function playTurnaround($isRepeat) {
     var duration;
     if (!$isRepeat) {
         var randomNote = Math.random() * 7;
-        note = getNoteInterval('ionian', randomNote);
+        note = Modes.getNoteInterval('ionian', randomNote);
         duration = (60 / tempo) * (1 / generateDuration.getRandomDuration(durations)) * 1000;
         console.log('duration: ' + duration);
         buffer.appendNote(randomNote, duration);
     }
     else {
-        note = getNoteInterval('ionian', buffer.getNoteAtIndex(currentNote % notes)[0]);
+        note = Modes.getNoteInterval('ionian', buffer.getNoteAtIndex(currentNote % notes)[0]);
         duration = buffer.getNoteAtIndex(currentNote % notes)[1];
         console.log('retrived note: ' + note + ', duration: ' + duration);
     }
